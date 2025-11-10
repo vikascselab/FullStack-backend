@@ -1,8 +1,8 @@
-const http = require('http');
-const fs=require('fs');
-const { buffer } = require('stream/consumers');
 
-const server = http.createServer((req, res) => {
+const fs=require('fs');
+const { buffer, json } = require('stream/consumers');
+
+const reqHandler= (req, res) => {
   console.log(req.url, req.method, req.headers);
 
   // Set proper content type (case matters)
@@ -34,21 +34,21 @@ const server = http.createServer((req, res) => {
      const fullbody= Buffer.concat(body).toString();
      console.log(fullbody);
    const params=  new URLSearchParams(fullbody);
-   const bodyobject={};
-   for(const [key, val] of params.entries()){
-    bodyobject[key]=val;
-   }
+  //  const bodyobject={};
+  //  for(const [key, val] of params.entries()){
+  //   bodyobject[key]=val;
+  //  }
+  const bodyobject=Object.fromEntries(params);
    console.log(bodyobject);
+    fs.writeFileSync('user.text',JSON.stringify(bodyobject));
     })
-   fs.writeFileSync('user.text','Vikas Yadav');
+  
    res.statusCode=302;
    res.setHeader('Location', '/');
    
   }
  
-});
+};
 
-const PORT = 3001;
-server.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
-});
+module.exports=reqHandler;
+
